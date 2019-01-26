@@ -1,20 +1,50 @@
-from notion.client import NotionClient
 import requests as req
+from notion.client import NotionClient
 
-client = NotionClient(
-    token_v2="ce3156b6ba04b9aab71a05479733bab47b5165ac04c1e83f405d2889cc05687e55e1aa55e3c140490c9e77421c525bcfa32a7ec026ff22e192210a8688c6937ee2ba24b87473bbcc63b2b4217d29")
-page = client.get_block(
-    "https://www.notion.so/taebae/2018-by-4ceee3ab2dc74897b9b2c6850655cc3e")
+sample = [{"title": "ㅗㅜㅑ"}, {"title": "ㅗㅜㅑ"}, {"title": "ㅗㅜㅑ"}]
+text = filter(lambda block: "title" in block, sample)
+# ext_srcs = filter(lambda block: block not in text, page)
 
-text = filter(lambda block: "title" in block, page)
-ext_srcs = filter(lambda block: block not in text, page)
-for value in text:
+
+def curry(func):
+    f_args = []
+    f_kwargs = {}
+
+    def f(*args, **kwargs):
+        nonlocal f_args, f_kwargs
+        if args or kwargs:
+            f_args += args
+            f_kwargs.update(kwargs)
+            return f
+        else:
+            return func(*f_args, *f_kwargs)
+    return f
+
+# TODO: make curry decorator work
+@curry
+def iterate_thru():
+    for i in text:
+        yield i
+
+@curry
+def add(*args):
+    sum = 0
+    for item in args:
+        sum += item
+    return sum
+
+@curry
+def take(f, li):
+    for i in li:
+        if len(li):
+            yield(i)
+
+a1 = add(1)
+a2 = a1(2)
+
+# TODO: Implement Pipe decorator class for functional programming
+for item in iterate_thru():
     try:
-        print(value)
-    except ValueError:
-        print("Value Error")
-for value in ext_srcs:
-    try:
-        print(value)
+        print(item)
     except ValueError:
         print("Value Error")
